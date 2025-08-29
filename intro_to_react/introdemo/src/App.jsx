@@ -5,10 +5,10 @@ import Notification from './components/Notification'
 import noteService from './services/notes'
 
 const App = () => {
-  const [notes, setNotes] = useState(null)
+  const [notes, setNotes] = useState([])
   const [newNote, setNewNote] = useState('')
   const [showAll, setShowAll] = useState(true)
-  const [errorMessage, setErrorMessage] = useState('some error happened...')
+  const [message, setMessage] = useState({message: null, type: null})
 
   useEffect(() => {
     noteService.getAll().then((initialNotes) => {
@@ -29,7 +29,13 @@ const App = () => {
 
     noteService.create(noteObject).then((returnedNote) => {
       setNotes(notes.concat(returnedNote))
-      setNewNote('')
+	  setMessage({
+		message: 'New Note Added', type: 'success'
+	  })
+	  setTimeout(() => {
+	  	setMessage({message: null, type: null})
+	  }, 5000)
+	  setNewNote('')
     })
   }
 
@@ -41,14 +47,20 @@ const App = () => {
       .update(id, changedNote)
       .then((returnedNote) => {
         setNotes(notes.map((note) => (note.id !== id ? note : returnedNote)))
+		setMessage({
+			message: 'Note Updated Successfully', type: 'success'
+		})
+		setTimeout(() => {
+			setMessage({message: null, type: null})
+		}, 5000)
       })
       // eslint-disable-next-line no-unused-vars
       .catch((error) => {
-        setErrorMessage(
-          `Note '${note.content}' was already removed from server`
-        )
+        setMessage({
+         message: `Note '${note.content}' was already removed from server`, type: 'error'
+		})
         setTimeout(() => {
-          setErrorMessage(null)
+          setMessage({message: null, type: null})
         }, 5000)
         setNotes(notes.filter((n) => n.id !== id))
       })
@@ -63,7 +75,7 @@ const App = () => {
   return (
     <div>
       <h1>Notes</h1>
-      <Notification message={errorMessage} />
+	  {message ? <Notification notification={message} /> : ""}
       <div>
         <button onClick={() => setShowAll(!showAll)}>
           show {showAll ? 'important' : 'all'}
