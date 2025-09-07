@@ -46,9 +46,8 @@ const App = () => {
                 setNotification(null)
               }, 5000)
             })
-            // eslint-disable-next-line no-unused-vars
             .catch(error => {
-              setNotification({message: `Information of ${newPerson.name} has already been removed from server`, class: "error"})
+              setNotification({message: error.response.data.error, class: "error"})
               setTimeout(() => {
                 setNotification(null)
               }, 5000)
@@ -72,8 +71,9 @@ const App = () => {
         setNewName('')
         setNewNumber('')
       })
-      .catch(() => {
-        alert(`An error occurred while creating ${existingPerson.name}`)
+      .catch((error) => {
+        console.log(error.response.data.error)
+        setNotification({message: error.response.data.error, class: "error"})
       })
   }
 
