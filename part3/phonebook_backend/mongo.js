@@ -5,11 +5,15 @@ if (process.argv.length < 3) {
 }
 
 const phonebookSchema = new mongoose.Schema({
-	name: String,
+	name: {
+		type: String,
+		minLength: 3,
+		required: true
+	},
 	number: String,
 })
 
-const Person = mongoose.model('Person', phonebookSchema)
+const Person = mongoose.models.Person || mongoose.model('Person', phonebookSchema)
 
 const password = process.argv[2]
 
